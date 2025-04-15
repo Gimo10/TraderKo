@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FX Trader Pro - Trade Journal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #818cf8;
+            --profit: #10b981;
+            --profit-light: #d1fae5;
+            --loss: #ef4444;
+            --loss-light: #fee2e2;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --gold: #f59e0b;
+            --gold-light: #fef3c7;
+            --crypto: #7c3aed;
+            --crypto-light: #ede9fe;
+            --border: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        /* Navigation Styles */
+        nav {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 20px;
+            border-radius: 0 0 16px 16px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .nav-title {
+            color: white;
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-title i {
+            font-size: 1.8rem;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-button {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .nav-button i {
+            font-size: 1.1rem;
+        }
+        
+        .content-wrapper {
+            padding: 0 20px 40px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        .tagline {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+        
+        .card-title i {
+            font-size: 1.3rem;
+            background: var(--primary-light);
+            color: white;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+        
+        /* Trade Journal Styles */
+        #tradeHistory {
+            margin-top: 25px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        #tradeHistory::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #tradeHistory::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        
+        #tradeHistory::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+        
+        .trade-item {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .trade-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        
+        .trade-profit {
+            border-left: 5px solid var(--profit);
+            background: linear-gradient(to right, var(--profit-light) 0%, white 15%);
+        }
+        
+        .trade-loss {
+            border-left: 5px solid var(--loss);
+            background: linear-gradient(to right, var(--loss-light) 0%, white 15%);
+        }
+        
+        .trade-gold {
+            border-left: 5px solid var(--gold);
+            background: linear-gradient(to right, var(--gold-light) 0%, white 15%);
+        }
+        
+        .trade-crypto {
+            border-left: 5px solid var(--crypto);
+            background: linear-gradient(to right, var(--crypto-light) 0%, white 15%);
+        }
+        
+        .trade-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .trade-pair {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .trade-pair i {
+            font-size: 0.9rem;
+        }
+        
+        .gold-pair {
+            color: var(--gold);
+        }
+        
+        .gold-pair i {
+            background: var(--gold-light);
+            color: var(--gold);
+            padding: 5px;
+            border-radius: 8px;
+        }
+        
+        .crypto-pair {
+            color: var(--crypto);
+        }
+        
+        .crypto-pair i {
+            background: var(--crypto-light);
+            color: var(--crypto);
+            padding: 5px;
+            border-radius: 8px;
+        }
+        
+        .trade-outcome {
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        
+        .profit {
+            color: var(--profit);
+            background: var(--profit-light);
+        }
+        
+        .loss {
+            color: var(--loss);
+            background: var(--loss-light);
+        }
+        
+        .trade-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            background: rgba(0,0,0,0.02);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .trade-details-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .trade-details-label {
+            font-weight: 500;
+        }
+        
+        .trade-details-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .delete-trade {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--text-light);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .delete-trade:hover {
+            background: var(--loss-light);
+            color: var(--loss);
+        }
+        
+        .trade-timestamp {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, #ffffff, #f5f5f5);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+        }
+        
+        .stat-icon {
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .win-rate .stat-icon {
+            color: var(--profit);
+        }
+        
+        .total-trades .stat-icon {
+            color: var(--primary);
+        }
+        
+        .loss-rate .stat-icon {
+            color: var(--loss);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 5px 0;
+            text-shadow: 0 2px 3px rgba(0,0,0,0.05);
+        }
+        
+        .win-rate .stat-value {
+            color: var(--profit);
+        }
+        
+        .loss-rate .stat-value {
+            color: var(--loss);
+        }
+        
+        .total-trades .stat-value {
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+            border: 1px solid var(--border);
+        }
+        
+        @keyframes modalFadeIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-title {
+            margin-top: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title i {
+            background: var(--primary-light);
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--bg);
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: var(--loss-light);
+            color: var(--loss);
+            transform: rotate(90deg);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            color: var(--text);
+            background: white;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary-light);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+        }
+        
+        input::placeholder {
+            color: #cbd5e1;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .result-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .button-win {
+            background: var(--profit);
+        }
+        
+        .button-win:hover {
+            background: #0d9488;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        
+        .button-loss {
+            background: var(--loss);
+        }
+        
+        .button-loss:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+        
+        .button-secondary {
+            background: var(--text-light);
+            margin-top: 10px;
+        }
+        
+        .button-secondary:hover {
+            background: #475569;
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
+        }
+        
+        .pair-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .pair-suggestion {
+            background: var(--bg);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+        }
+        
+        .pair-suggestion:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .gold-suggestion {
+            background: var(--gold-light);
+            color: var(--gold);
+            border-color: var(--gold-light);
+        }
+        
+        .gold-suggestion:hover {
+            background: var(--gold);
+            color: white;
+            border-color: var(--gold);
+        }
+        
+        .crypto-suggestion {
+            background: var(--crypto-light);
+            color: var(--crypto);
+            border-color: var(--crypto-light);
+        }
+        
+        .crypto-suggestion:hover {
+            background: var(--crypto);
+            color: white;
+            border-color: var(--crypto);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 20px 0 15px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--border);
+        }
+        
+        @media (max-width: 768px) {
+            nav {
+                border-radius: 0;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="nav-title">
+            <i class="fas fa-chart-line"></i> FX Trader Pro
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-button" onclick="showCalculatorModal()">
+                <i class="fas fa-calculator"></i> Calculator
+            </button>
+            <button class="nav-button" onclick="showRecordTradeModal()">
+                <i class="fas fa-plus-circle"></i> Record Trade
+            </button>
+        </div>
+    </nav>
+    
+    <header>
+        <h1><i class="fas fa-chart-line"></i> FX Trader Pro</h1>
+        <p class="tagline">Smart Lot Calculator & Trade Journal</p>
+        <p class="tagline">Moan Wyeth T. Frejas</p>
+    </header>
+    
+    <div class="container">
+        <!-- Trade Journal Section -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-book"></i> Trade Journal</div>
+            
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-card win-rate">
+                    <div class="stat-label">Win Rate</div>
+                    <div class="stat-value" id="winRate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Trades</div>
+                    <div class="stat-value" id="totalTrades">0</div>
+                </div>
+                <div class="stat-card loss-rate">
+                    <div class="stat-label">Loss Rate</div>
+                    <div class="stat-value" id="lossRate">0%</div>
+                </div>
+            </div>
+            
+            <!-- Trade History -->
+            <h3 style="margin-top: 20px; margin-bottom: 10px;"><i class="fas fa-history"></i> Trade History</h3>
+            <div id="tradeHistory">
+                <!-- Trade items will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculator Modal -->
+    <div id="calculatorModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideCalculatorModal()">&times;</button>
+            <h2 class="modal-title"><i class="fas fa-calculator"></i> Lot Size Calculator</h2>
+            
+            <label for="accountCurrency">Account Currency:</label>
+            <select id="accountCurrency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="PHP">PHP</option>
+                <option value="JPY">JPY</option>
+                <option value="GBP">GBP</option>
+            </select>
+
+            <label for="pair">Trading Pair:</label>
+            <input type="text" id="pair" placeholder="e.g., EUR/USD, XAU/USD, BTC/USD" value="EUR/USD">
+            <div class="pair-suggestions">
+                <div class="pair-suggestion" onclick="setPair('EUR/USD')">EUR/USD</div>
+                <div class="pair-suggestion" onclick="setPair('GBP/USD')">GBP/USD</div>
+                <div class="pair-suggestion" onclick="setPair('USD/JPY')">USD/JPY</div>
+                <div class="pair-suggestion gold-suggestion" onclick="setPair('XAU/USD')">XAU/USD</div>
+                <div class="pair-suggestion crypto-suggestion" onclick="setPair('BTC/USD')">BTC/USD</div>
+            </div>
+
+            <label for="accountBalance">Account Balance:</label>
+            <input type="number" id="accountBalance" placeholder="e.g., 1000">
+
+            <label for="riskPercentage">Risk Percentage (%):</label>
+            <input type="number" id="riskPercentage" placeholder="e.g., 1" value="1">
+
+            <label for="stopLossPips">Stop Loss (Pips):</label>
+            <input type="number" id="stopLossPips" placeholder="e.g., 30">
+
+            <button onclick="calculateLotSize()"><i class="fas fa-calculator"></i> Calculate Lot Size</button>
+
+            <div id="result" class="result" style="display: none;">
+                <div class="result-row">
+                    <span class="result-label">Risk Amount:</span>
+                    <span class="result-value" id="riskAmountResult">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Recommended Lot Size:</span>
+                    <span class="result-value" id="lotSizeResult">0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Micro Lots (0.01):</span>
+                    <span class="result-value" id="microLotsResult">0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Pip Value:</span>
+                    <span class="result-value" id="pipValueResult">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Record Trade Modal -->
+    <div id="recordTradeModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideRecordTradeModal()">&times;</button>
+            <h2 class="modal-title"><i class="fas fa-plus-circle"></i> Record Trade</h2>
+            
+            <label for="modalTradePair">Pair:</label>
+            <input type="text" id="modalTradePair" placeholder="e.g., EUR/USD, XAU/USD, BTC/USD">
+            <div class="pair-suggestions">
+                <div class="pair-suggestion" onclick="setModalPair('EUR/USD')">EUR/USD</div>
+                <div class="pair-suggestion" onclick="setModalPair('GBP/USD')">GBP/USD</div>
+                <div class="pair-suggestion" onclick="setModalPair('USD/JPY')">USD/JPY</div>
+                <div class="pair-suggestion gold-suggestion" onclick="setModalPair('XAU/USD')">XAU/USD</div>
+                <div class="pair-suggestion crypto-suggestion" onclick="setModalPair('BTC/USD')">BTC/USD</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label for="modalEntryPrice">Entry Price:</label>
+                    <input type="number" id="modalEntryPrice" step="0.00001" placeholder="1.0850">
+                </div>
+                <div>
+                    <label for="modalExitPrice">Exit Price:</label>
+                    <input type="number" id="modalExitPrice" step="0.00001" placeholder="1.0900">
+                </div>
+            </div>
+            
+            <label for="modalTradeLotSize">Lot Size:</label>
+            <input type="number" id="modalTradeLotSize" step="0.01" placeholder="0.10">
+            
+            <div class="button-group">
+                <button onclick="recordTrade('win')" class="button-win">
+                    <i class="fas fa-check"></i> Record Win
+                </button>
+                <button onclick="recordTrade('loss')" class="button-loss">
+                    <i class="fas fa-times"></i> Record Loss
+                </button>
+            </div>
+            
+            <button onclick="hideRecordTradeModal()" class="button-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Load saved trades from localStorage
+        let trades = JSON.parse(localStorage.getItem('trades')) || [];
+        
+        // Show calculator modal
+        function showCalculatorModal() {
+            document.getElementById('calculatorModal').style.display = 'flex';
+        }
+        
+        // Hide calculator modal
+        function hideCalculatorModal() {
+            document.getElementById('calculatorModal').style.display = 'none';
+        }
+        
+        // Show record trade modal
+        function showRecordTradeModal() {
+            document.getElementById('recordTradeModal').style.display = 'flex';
+        }
+        
+        // Hide record trade modal
+        function hideRecordTradeModal() {
+            document.getElementById('recordTradeModal').style.display = 'none';
+        }
+        
+        // Set pair in calculator
+        function setPair(pair) {
+            document.getElementById("pair").value = pair;
+        }
+        
+        // Set pair in trade modal
+        function setModalPair(pair) {
+            document.getElementById("modalTradePair").value = pair;
+        }
+        
+        // Calculate pip value based on pair type
+        function getPipValue(pair, accountCurrency) {
+            pair = pair.toUpperCase();
+            
+            // Gold (XAU/USD)
+            if (pair === "XAU/USD") {
+                // For gold, 1 pip is typically $0.01 for 1 lot (100oz)
+                return 1; // $1 per pip for 1 standard lot (100oz)
+            }
+            
+            // Crypto (BTC/USD)
+            if (pair === "BTC/USD") {
+                // For crypto, pip value varies more, but we'll use $1 per pip for 1 BTC
+                return 1; // $1 per pip for 1 BTC
+            }
+            
+            // Forex pairs
+            const baseCurrency = pair.split('/')[0];
+            const quoteCurrency = pair.split('/')[1];
+            
+            // For JPY pairs
+            if (quoteCurrency === "JPY") {
+                return 1000; // Approx 1000 JPY per pip for 1 lot
+            }
+            
+            // Standard forex pairs (EUR/USD, GBP/USD, etc.)
+            if (quoteCurrency === accountCurrency) {
+                return 10; // $10 per pip for 1 lot
+            }
+            
+            // For other cases (needs more complex calculation with exchange rates)
+            return 10; // Default to $10 per pip for 1 lot
+        }
+        
+        // Calculate lot size
+        function calculateLotSize() {
+            // Get inputs
+            const accountCurrency = document.getElementById("accountCurrency").value;
+            const pair = document.getElementById("pair").value.toUpperCase();
+            const accountBalance = parseFloat(document.getElementById("accountBalance").value);
+            const riskPercentage = parseFloat(document.getElementById("riskPercentage").value);
+            const stopLossPips = parseFloat(document.getElementById("stopLossPips").value);
+
+            // Validate inputs
+            if (!accountBalance || !riskPercentage || !stopLossPips) {
+                alert("Please fill in all fields!");
+                return;
+            }
+
+            // Calculate risk amount
+            const riskAmount = (accountBalance * riskPercentage) / 100;
+
+            // Get pip value based on pair type
+            const pipValue = getPipValue(pair, accountCurrency);
+
+            // Calculate lot size
+            let lotSize;
+            
+            if (pair === "XAU/USD") {
+                // For gold, standard lot is 100oz
+                lotSize = riskAmount / (stopLossPips * pipValue);
+            } else if (pair === "BTC/USD") {
+                // For crypto, standard lot is 1 BTC
+                lotSize = riskAmount / (stopLossPips * pipValue);
+            } else {
+                // For forex, standard lot is 100,000 units
+                lotSize = riskAmount / (stopLossPips * (pipValue / 100));
+            }
+
+            // Display result
+            const resultDiv = document.getElementById("result");
+            resultDiv.style.display = "block";
+            document.getElementById("riskAmountResult").textContent = `${accountCurrency} ${riskAmount.toFixed(2)}`;
+            document.getElementById("lotSizeResult").textContent = lotSize.toFixed(2);
+            document.getElementById("microLotsResult").textContent = (lotSize * 100).toFixed(2);
+            document.getElementById("pipValueResult").textContent = `${accountCurrency} ${(pipValue/100).toFixed(2)} per pip (0.01 lot)`;
+        }
+        
+        // Record a trade
+        function recordTrade(outcome) {
+            const pair = document.getElementById("modalTradePair").value.toUpperCase();
+            const entryPrice = parseFloat(document.getElementById("modalEntryPrice").value);
+            const exitPrice = parseFloat(document.getElementById("modalExitPrice").value);
+            const lotSize = parseFloat(document.getElementById("modalTradeLotSize").value);
+            
+            if (!pair || !entryPrice || !exitPrice || !lotSize) {
+                alert("Please fill in all trade details!");
+                return;
+            }
+            
+            // Calculate P&L
+            let pips = 0;
+            let profit = 0;
+            let pipValue = getPipValue(pair, document.getElementById("accountCurrency").value);
+            
+            if (pair === "XAU/USD") {
+                // Gold calculation (1 pip = $0.01 per oz)
+                if (outcome === 'win') {
+                    pips = (exitPrice - entryPrice) * 100; // Convert $1.23 to 123 pips
+                    profit = pips * pipValue * lotSize;
+                } else {
+                    pips = (entryPrice - exitPrice) * 100;
+                    profit = -pips * pipValue * lotSize;
+                }
+            } 
+            else if (pair === "BTC/USD") {
+                // Crypto calculation (1 pip = $1 per BTC)
+                if (outcome === 'win') {
+                    pips = (exitPrice - entryPrice);
+                    profit = pips * pipValue * lotSize;
+                } else {
+                    pips = (entryPrice - exitPrice);
+                    profit = -pips * pipValue * lotSize;
+                }
+            }
+            else if (pair.includes("JPY")) {
+                // JPY pairs calculation
+                if (outcome === 'win') {
+                    pips = (exitPrice - entryPrice) * 100;
+                    profit = pips * pipValue * lotSize / 100;
+                } else {
+                    pips = (entryPrice - exitPrice) * 100;
+                    profit = -pips * pipValue * lotSize / 100;
+                }
+            }
+            else {
+                // Standard forex calculation
+                if (outcome === 'win') {
+                    pips = (exitPrice - entryPrice) * 10000;
+                    profit = pips * pipValue * lotSize / 100;
+                } else {
+                    pips = (entryPrice - exitPrice) * 10000;
+                    profit = -pips * pipValue * lotSize / 100;
+                }
+            }
+            
+            // Create trade object
+            const trade = {
+                id: Date.now(),
+                date: new Date().toLocaleString(),
+                pair,
+                entryPrice,
+                exitPrice,
+                lotSize,
+                outcome,
+                pips: Math.abs(pips).toFixed(1),
+                profit: profit.toFixed(2),
+                currency: document.getElementById("accountCurrency").value
+            };
+            
+            // Add to trades array
+            trades.push(trade);
+            
+            // Save to localStorage
+            localStorage.setItem('trades', JSON.stringify(trades));
+            
+            // Update UI
+            updateTradeHistory();
+            updateStats();
+            
+            // Clear form and hide modal
+            document.getElementById("modalTradePair").value = "";
+            document.getElementById("modalEntryPrice").value = "";
+            document.getElementById("modalExitPrice").value = "";
+            document.getElementById("modalTradeLotSize").value = "";
+            hideRecordTradeModal();
+        }
+        
+        // Get trade item class based on pair type
+        function getTradeItemClass(pair) {
+            pair = pair.toUpperCase();
+            if (pair === "XAU/USD") return "trade-gold";
+            if (pair === "BTC/USD") return "trade-crypto";
+            return "";
+        }
+        
+        // Get pair class for styling
+        function getPairClass(pair) {
+            pair = pair.toUpperCase();
+            if (pair === "XAU/USD") return "gold-pair";
+            if (pair === "BTC/USD") return "crypto-pair";
+            return "";
+        }
+        
+        // Update trade history display
+        function updateTradeHistory() {
+            const historyDiv = document.getElementById("tradeHistory");
+            historyDiv.innerHTML = "";
+            
+            if (trades.length === 0) {
+                historyDiv.innerHTML = "<p>No trades recorded yet.</p>";
+                return;
+            }
+            
+            trades.slice().reverse().forEach(trade => {
+                const tradeItem = document.createElement("div");
+                tradeItem.className = `trade-item trade-${trade.outcome} ${getTradeItemClass(trade.pair)}`;
+                
+                tradeItem.innerHTML = `
+                    <button class="delete-trade" onclick="deleteTrade(${trade.id})"><i class="fas fa-trash"></i></button>
+                    <div class="trade-header">
+                        <span class="trade-pair ${getPairClass(trade.pair)}">${trade.pair}</span>
+                        <span class="trade-outcome ${trade.outcome}">${trade.outcome === 'win' ? 'WIN' : 'LOSS'} (${trade.pips} pips)</span>
+                    </div>
+                    <div class="trade-details">
+                        <div>Entry: ${trade.entryPrice}</div>
+                        <div>Exit: ${trade.exitPrice}</div>
+                        <div>Lots: ${trade.lotSize}</div>
+                        <div>P&L: <span class="${trade.outcome}">${trade.profit} ${trade.currency}</span></div>
+                    </div>
+                    <div style="margin-top: 5px; font-size: 0.8rem; color: #94a3b8;">
+                        ${trade.date}
+                    </div>
+                `;
+                
+                historyDiv.appendChild(tradeItem);
+            });
+        }
+        
+        // Delete a trade
+        function deleteTrade(id) {
+            trades = trades.filter(trade => trade.id !== id);
+            localStorage.setItem('trades', JSON.stringify(trades));
+            updateTradeHistory();
+            updateStats();
+        }
+        
+        // Update statistics
+        function updateStats() {
+            if (trades.length === 0) {
+                document.getElementById("winRate").textContent = "0%";
+                document.getElementById("lossRate").textContent = "0%";
+                document.getElementById("totalTrades").textContent = "0";
+                return;
+            }
+            
+            const wins = trades.filter(trade => trade.outcome === 'win').length;
+            const losses = trades.filter(trade => trade.outcome === 'loss').length;
+            
+            const winRate = Math.round((wins / trades.length) * 100);
+            const lossRate = Math.round((losses / trades.length) * 100);
+            
+            document.getElementById("winRate").textContent = `${winRate}%`;
+            document.getElementById("lossRate").textContent = `${lossRate}%`;
+            document.getElementById("totalTrades").textContent = trades.length;
+        }
+        
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        // Initialize the app
+        window.onload = function() {
+            updateTradeHistory();
+            updateStats();
+        };
+    </script>
+</body>
+</html>
